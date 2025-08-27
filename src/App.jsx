@@ -23,7 +23,7 @@ function App() {
   }, []);
 
   return (
-    <div className='w-full p-2 bg-[#3F82F5] flex items-stretch gap-2'>
+    <div className='w-full min-h-screen p-2 bg-[#3F82F5] flex items-stretch gap-2'>
       <CoinListContext.Provider value={{ coinList, setCoinList }}>
         <CoinList />
         <GraphList />

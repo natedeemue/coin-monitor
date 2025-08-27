@@ -28,27 +28,45 @@ export default function CoinList() {
     })
   )
 
-  const findContainer = useCallback((id) => {
-    // Check if the input is containerId
-    if (id in coinList)
-      return id;
-
-    // if it's not a containerId, it's a coinId (but we need to find its containerId)
-    return Object.keys(coinList).find(
-      (key) => coinList[key].find(c => c.id === id)
-    );
-  }, [coinList])
-
-  const handleDragOver = useCallback((event) => {
-    console.log('Dragging over', event);
-  }, [])
-
   const handleDragEnd = useCallback((event) => {
-    console.log('Drag ended', event);
-  }, [])
+    const { active, over } = event;
+
+    const activeContainer = active.data.current.sortable.containerId
+    const overContainer = over.data.current?.sortable.containerId || over.id
+
+    if (
+      active.id === over.id ||
+      !activeContainer ||
+      !overContainer
+    ) {
+      return;
+    }
+
+    const activeIndex = active.data.current.sortable.index
+    const overIndex = over.data.current?.sortable.index ?? -1
+    // -1 means "DragEnd on container => append to the end of array"
+
+    setCoinList((items) => {
+      const activeCoin = items[activeContainer][activeIndex]
+      // remove old card
+      const removed = {
+        ...items,
+        [activeContainer]: items[activeContainer].filter((item) => item.id !== active.id),
+      }
+
+      return {
+        ...removed,
+        [overContainer]: overIndex === -1
+          ? [...removed[overContainer], activeCoin] // append to end of array
+          : [...removed[overContainer].slice(0, overIndex), activeCoin, ...removed[overContainer].slice(overIndex)] // insert into the target array
+      }
+    })
+
+    setActiveCoin(null);
+  }, [setCoinList])
 
   return (
-    <div className='grow-[1] flex items-stretch gap-2'>
+    <div className='flex-[2] flex items-stretch gap-2'>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -56,7 +74,6 @@ export default function CoinList() {
           const info = event.active.data.current.sortable
           setActiveCoin(coinList[info.containerId][info.index]);
         }}
-        onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
         <Container id="unwatchList" title="Possible Coins" coinList={coinList.unwatchList} />
