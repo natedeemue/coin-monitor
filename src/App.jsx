@@ -5,6 +5,7 @@ import GraphList from './components/GraphList'
 
 import { CoinListContext } from './contexts/context';
 import { getCoinList } from './services/service';
+import { Bounce, ToastContainer } from 'react-toastify';
 
 function App() {
   const [coinList, setCoinList] = useState({
@@ -27,6 +28,19 @@ function App() {
       <CoinListContext.Provider value={{ coinList, setCoinList }}>
         <CoinList />
         <GraphList />
+        <ToastContainer
+          position="top-center"
+          autoClose={1500}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+          transition={Bounce}
+        />
       </CoinListContext.Provider>
     </div>
   )

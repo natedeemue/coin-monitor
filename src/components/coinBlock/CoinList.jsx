@@ -15,6 +15,7 @@ import { Card } from './CoinCard';
 import Container from './Container'
 import { CoinListContext } from '../../contexts/context';
 import { getCoinPrice } from '../../services/service';
+import { Bounce, toast } from 'react-toastify';
 
 export default function CoinList() {
   // context API
@@ -79,8 +80,17 @@ export default function CoinList() {
           )
         }))
       } catch (error) {
-        // note: display error message
-        console.error(error)
+        toast.error(error.message, {
+          position: "top-center",
+          autoClose: 1500,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
         setCoinList(recovery)
       }
     }
