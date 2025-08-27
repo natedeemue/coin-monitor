@@ -29,11 +29,11 @@ export const getCoinPrice = async () => {
 
   const response = await new Promise((resolve, reject) => {
     setTimeout(() => {
-      if(Math.random() < 0.5)
+      if(Math.random() < 0.6)
         resolve(data)
       else
         reject(new Error('Failed to fetch coin prices'))
-    }, 900)
+    }, 350)
   })
 
   return response

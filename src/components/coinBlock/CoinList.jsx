@@ -14,6 +14,7 @@ import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { Card } from './CoinCard';
 import Container from './Container'
 import { CoinListContext } from '../../contexts/context';
+import { getCoinPrice } from '../../services/service';
 
 export default function CoinList() {
   // context API
@@ -28,7 +29,7 @@ export default function CoinList() {
     })
   )
 
-  const handleDragEnd = useCallback((event) => {
+  const handleDragEnd = useCallback(async (event) => {
     const { active, over } = event;
 
     const activeContainer = active.data.current.sortable.containerId
@@ -42,12 +43,16 @@ export default function CoinList() {
       return;
     }
 
+    const recovery = coinList
     const activeIndex = active.data.current.sortable.index
     const overIndex = over.data.current?.sortable.index ?? -1
     // -1 means "DragEnd on container => append to the end of array"
 
     setCoinList((items) => {
       const activeCoin = items[activeContainer][activeIndex]
+      if(overContainer == 'unwatchList')
+        activeCoin.prices = []
+
       // remove old card
       const removed = {
         ...items,
@@ -63,7 +68,23 @@ export default function CoinList() {
     })
 
     setActiveCoin(null);
-  }, [setCoinList])
+
+    if(overContainer == 'watchList' && activeContainer != 'watchList') {
+      try {
+        const response = await getCoinPrice()
+        setCoinList((items) => ({
+          ...items,
+          [overContainer]: items[overContainer].map(
+            (coin) => coin.id === active.id? { ...coin, prices: response }: coin
+          )
+        }))
+      } catch (error) {
+        // note: display error message
+        console.error(error)
+        setCoinList(recovery)
+      }
+    }
+  }, [coinList, setCoinList])
 
   return (
     <div className='flex-[2] flex items-stretch gap-2'>
