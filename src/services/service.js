@@ -20,7 +20,7 @@ export const getCoinList = async () => {
 
 export const getCoinPrice = async () => {
   const data = [50]
-  for(let i=1; i<100; i++) {
+  for(let i=1; i<20; i++) {
     let newValue = data[i-1] + (Math.round(Math.random() * 10) - 5)
     data.push(
       newValue < 1 ? 1 : newValue
